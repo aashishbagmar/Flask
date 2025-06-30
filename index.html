@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="mb-4">Amazon Price Tracker</h1>
+    
+    <div class="mb-4">
+        <a href="{{ url_for('add_alert') }}" class="btn btn-primary">Add New Alert</a>
+        <a href="{{ url_for('manual_check_alerts') }}" class="btn btn-secondary">Check Alerts Now</a>
+    </div>
+    
+    <h2 class="mb-3">Your Price Alerts</h2>
+    
+    {% if alerts %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Current Price</th>
+                        <th>Target Price</th>
+                        <th>Last Checked</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alert in alerts %}
+                        <tr>
+                            <td>
+                                {% if alert[4] %}
+                                    <a href="{{ alert[2] }}" target="_blank">{{ alert[4] }}</a>
+                                {% else %}
+                                    <a href="{{ alert[2] }}" target="_blank">Product Link</a>
+                                {% endif %}
+                            </td>
+                            <td>₹{{ "%.2f"|format(alert[5]) if alert[5] else "N/A" }}</td>
+                            <td>₹{{ "%.2f"|format(alert[3]) }}</td>
+                            <td>{{ alert[6] or "Not checked yet" }}</td>
+                            <td>
+                                {% if alert[7] %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('toggle_alert', alert_id=alert[0]) }}" class="btn btn-sm btn-outline-primary">
+                                    {% if alert[7] %}Deactivate{% else %}Activate{% endif %}
+                                </a>
+                                <a href="{{ url_for('delete_alert', alert_id=alert[0]) }}" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">No price alerts set up yet. Add your first alert!</div>
+    {% endif %}
+{% endblock %}
